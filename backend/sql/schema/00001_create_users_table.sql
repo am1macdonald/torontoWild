@@ -14,4 +14,4 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users(email);
 
 -- +goose Down
-DROP TABLE users;
+DROP TABLE users; 
