@@ -9,6 +9,8 @@ RUN go mod download && go mod verify
 
 COPY . .
 
+RUN ./scripts/db_manage.sh  up
+
 CMD ["air"]
 
 EXPOSE 8080
