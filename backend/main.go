@@ -1,28 +1,40 @@
 package main
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
-	_ "github.com/tursodatabase/go-libsql"
+	"github.com/am1macdonald/torontoWild/internal/database"
+	"github.com/jackc/pgx/v5"
 )
 
 type apiConfig struct {
+	db *database.Queries
 }
 
 func main() {
-	dbName := "file:./local.db"
-	db, err := sql.Open("libsql", dbName)
+	ctx := context.Background()
+	dbUrl := os.Getenv("DB_URL")
+	fmt.Println(dbUrl)
+	conn, err := pgx.Connect(
+		ctx,
+		dbUrl,
+	)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to open db %s", err)
-		os.Exit(1)
+		log.Fatal(err)
+	}
+	defer conn.Close(ctx)
+	log.Println("Connected to database")
+
+	cfg := apiConfig{
+		db: database.New(conn),
 	}
 
 	mux := http.NewServeMux()
-
+	mux.HandleFunc("GET /api/v1/user/{id}", cfg.HandleGetUser)
 	s := &http.Server{
 		Addr:    ":8080",
 		Handler: mux,
