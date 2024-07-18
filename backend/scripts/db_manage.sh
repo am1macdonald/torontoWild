@@ -6,7 +6,7 @@ if [ -f .env ]; then
 fi
 
 # Database connection string
-DB_CONN="host=${DB_HOST} user=${DB_USER} dbname=${DB_NAME} sslmode=disable"
+DB_CONN="${DB_URL}"
 
 # Function to display usage information
 usage() {
