@@ -5,8 +5,10 @@ services:
       dockerfile: dev.Dockerfile
     env_file: "./backend/.env"
     depends_on:
-      - valkey
-      - postgres
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_started
     develop:
       watch:
         - action: sync
@@ -14,9 +16,11 @@ services:
           target: /usr/src/app
           ignore:
             - out/
+
   valkey:
     image: valkey/valkey:7.2.5-alpine
     restart: unless-stopped
+
   postgres:
     image: postgres:16.3
     restart: always
@@ -24,6 +28,14 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: toronto_wild
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   caddy: 
     image: caddy:2-alpine
     restart: unless-stopped
@@ -36,6 +48,7 @@ services:
       - $PWD/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+
 volumes:
   caddy_data:
   caddy_config:
