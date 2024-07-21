@@ -12,15 +12,6 @@ import (
 )
 
 const addUser = `-- name: AddUser :exec
-    -- email VARCHAR(255) UNIQUE NOT NULL,
-    -- first_name VARCHAR(50),
-    -- last_name VARCHAR(50),
-    -- bio TEXT,
-    -- created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    -- updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    -- last_login TIMESTAMP WITH TIME ZONE,
-    -- is_active BOOLEAN DEFAULT true
-
 INSERT INTO users
 (email, first_name, last_name)
 VALUES ($1, $2, $3)
@@ -32,7 +23,6 @@ type AddUserParams struct {
 	LastName  pgtype.Text
 }
 
-// id SERIAL PRIMARY KEY,
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) error {
 	_, err := q.db.Exec(ctx, addUser, arg.Email, arg.FirstName, arg.LastName)
 	return err
