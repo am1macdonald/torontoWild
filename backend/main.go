@@ -17,8 +17,7 @@ type apiConfig struct {
 	valKey *valkey.Client
 }
 
-func main() {
-	ctx := context.Background()
+func connectDB(ctx context.Context) (*pgx.Conn, *database.Queries) {
 	dbUrl := os.Getenv("DB_URL")
 	fmt.Println(dbUrl)
 	conn, err := pgx.Connect(
@@ -28,11 +27,33 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer conn.Close(ctx)
 	log.Println("Connected to database")
+	return conn, database.New(conn)
+}
+
+func connectCache() *valkey.Client {
+
+	client, err := valkey.NewClient(valkey.ClientOption{
+		InitAddress: []string{"valkey:6379"},
+	})
+
+	if err != nil {
+		panic(err)
+	}
+	log.Println("Connected to cache")
+	return &client
+}
+
+func main() {
+	ctx := context.Background()
+	conn, Queries := connectDB(ctx)
+	defer conn.Close(ctx)
+
+	client := connectCache()
 
 	cfg := apiConfig{
-		db: database.New(conn),
+		db:     Queries,
+		valKey: client,
 	}
 
 	mux := http.NewServeMux()
