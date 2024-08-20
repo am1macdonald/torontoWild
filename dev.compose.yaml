@@ -9,6 +9,8 @@ services:
         condition: service_healthy
       valkey:
         condition: service_started
+    ports:
+      - "8080:8080"
     develop:
       watch:
         - action: sync
