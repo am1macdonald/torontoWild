@@ -43,3 +43,18 @@ func createMagicLink(email string, valkey *valkey.Client, ctx context.Context) (
 
 	return fmt.Sprintf(host+"/auth?token%s", token), nil
 }
+
+func validateMagicLink(token string, valkey *valkey.Client, ctx context.Context) (string, error) {
+
+	email, err := (*valkey).Do(ctx, (*valkey).B().Get().Key(token).Build()).ToString()
+	if err != nil {
+		return "", err
+	}
+
+	err = (*valkey).Do(ctx, (*valkey).B().Del().Key(token).Build()).Error()
+	if err != nil {
+		return "", err
+	}
+
+	return email, nil
+}
