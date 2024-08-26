@@ -1,3 +1,4 @@
+{{ block "magiclink" . }}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,9 +57,9 @@
         </div>
         <h1>Welcome to TorontoWild!</h1>
         <p>Hello,</p>
-        <p>Thank you for using TorontoWild. To access your account, simply click the button below:</p>
+        <p>Thank you for using TorontoWild. To login, simply click the button below:</p>
         <p style="text-align: center;">
-            <a href="{{MAGIC_LINK_URL}}" class="button">Log In to TorontoWild</a>
+            <a href="{{ .MagicLink }}" class="button">Log In to TorontoWild</a>
         </p>
         <p>This link will expire in 15 minutes for security reasons. If you didn't request this email, please ignore it.</p>
         <p>Happy wildlife spotting!</p>
@@ -70,3 +71,4 @@
     </div>
 </body>
 </html>
+{{ end }}
