@@ -20,18 +20,18 @@ func generateToken() (string, error) {
 	return fmt.Sprintf("%x", bytes), nil
 }
 
-func createMagicLink(email string, valkey *valkey.Client, ctx context.Context) (string, error) {
+func CreateMagicLink(email string, valkey valkey.Client, ctx context.Context) (string, error) {
 	token, err := generateToken()
 	if err != nil {
 		return "", err
 	}
 
-	err = (*valkey).Do(ctx, (*valkey).B().Set().Key(token).Value(email).Build()).Error()
+	err = valkey.Do(ctx, valkey.B().Set().Key(token).Value(email).Build()).Error()
 	if err != nil {
 		return "", err
 	}
 
-	err = (*valkey).Do(ctx, (*valkey).B().Expire().Key(token).Seconds(300).Build()).Error()
+	err = valkey.Do(ctx, valkey.B().Expire().Key(token).Seconds(300).Build()).Error()
 	if err != nil {
 		return "", err
 	}
@@ -44,14 +44,14 @@ func createMagicLink(email string, valkey *valkey.Client, ctx context.Context) (
 	return fmt.Sprintf(host+"/auth?token%s", token), nil
 }
 
-func validateMagicLink(token string, valkey *valkey.Client, ctx context.Context) (string, error) {
+func ValidateMagicLink(token string, valkey valkey.Client, ctx context.Context) (string, error) {
 
-	email, err := (*valkey).Do(ctx, (*valkey).B().Get().Key(token).Build()).ToString()
+	email, err := valkey.Do(ctx, valkey.B().Get().Key(token).Build()).ToString()
 	if err != nil {
 		return "", err
 	}
 
-	err = (*valkey).Do(ctx, (*valkey).B().Del().Key(token).Build()).Error()
+	err = valkey.Do(ctx, valkey.B().Del().Key(token).Build()).Error()
 	if err != nil {
 		return "", err
 	}
