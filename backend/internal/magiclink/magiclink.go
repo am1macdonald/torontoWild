@@ -41,7 +41,7 @@ func CreateMagicLink(email string, valkey valkey.Client, ctx context.Context) (s
 		return "", errors.New("magic link base not set")
 	}
 
-	return fmt.Sprintf(host+"/auth?token%s", token), nil
+	return fmt.Sprintf(host+"/auth?token=%s", token), nil
 }
 
 func ValidateMagicLink(token string, valkey valkey.Client, ctx context.Context) (string, error) {
