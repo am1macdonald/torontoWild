@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -18,8 +19,8 @@ type message struct {
 	Sender   string   `json:"sender"`
 	To       []string `json:"to"`
 	Subject  string   `json:"subject"`
-	TextBody string   `json:"text_body"`
-	HtmlBody string   `json:"html_body"`
+	TextBody string   `json:"text_body,omitempty"`
+	HtmlBody string   `json:"html_body,omitempty"`
 }
 
 func New(key, address string) *Mailer {
@@ -80,9 +81,12 @@ func (m *Mailer) Send(
 	if err != nil {
 		return err
 	}
+	if response.StatusCode == http.StatusBadRequest {
+		log.Println(string(jsonBytes))
+		return errors.New("failed to send request")
+	}
 
-	fmt.Println(response)
+	fmt.Printf("successs: %v\n", response)
 
-	fmt.Println(r)
 	return nil
 }
