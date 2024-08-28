@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -82,11 +80,8 @@ func (m *Mailer) Send(
 		return err
 	}
 	if response.StatusCode == http.StatusBadRequest {
-		log.Println(string(jsonBytes))
 		return errors.New("failed to send request")
 	}
-
-	fmt.Printf("successs: %v\n", response)
 
 	return nil
 }
